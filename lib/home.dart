@@ -2,6 +2,13 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lesson/lesson.dart';
+import 'package:lesson/lesson_services.dart';
+import 'package:lesson/program.dart';
+import 'package:lesson/program_api.dart';
+import 'package:lesson/program_services.dart';
+
+import 'lesson_api.dart';
 
 
 
@@ -15,7 +22,37 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  service programService = service();
+  Program _program= Program();
+  service2 lessonservice=service2();
+  Lesson _lesson=Lesson();
+  bool _isLoading=true;
 
+  int a=0;
+  int b=0;
+ Future getprogram() async {
+    _program = await programService.getProgramData();
+    _lesson = await lessonservice.getlessonData();
+    setState(() {
+      getprogram();
+      _isLoading = false;
+    });
+  }
+
+   @override
+     void initState() {
+    // TODO: implement initState
+     getprogram();
+     Future.delayed(Duration(seconds: 0), () async {
+       await programService.getProgramData();
+       await lessonservice.getlessonData();
+       setState(() {
+         _isLoading = false;
+       });
+     });
+
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -201,114 +238,23 @@ class _HomeState extends State<Home> {
                ),
              ],
             ),
-            Container(
+            _isLoading? Center(child:CircularProgressIndicator()) : Container(
               height:288,// Adjust the height as per your requirement
-              child: ListView(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left:16.0),
-                    child: Container(
-                      height:297.5,
-                      width: 250,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),  color: Colors.white54,),
-                     //color: Colors.red,// Adjust the width as per your requirement
-                     // margin: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height:141,
-                                width:280,
-                              decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)), color:Colors.grey.shade300,),
-                             child: Image.asset("images/img_7.png",),
-                              ),
-                            Padding(padding: const EdgeInsets.only(left:8,top:8),
-                            child:Text("LIFESTYLE",style: TextStyle(color:Color.fromRGBO(89, 139, 237, 1),fontWeight: FontWeight.w600),)
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left:8.0,right:16,top:8.5),
-                              child: Container(
-                                child:Image.asset("images/img_8.png")
-                              ),
-                            ),
-                            Padding(padding: const EdgeInsets.only(left:8.0,right:16,top:16),
-                            child:Image.asset("images/img_9.png",scale:1.8)
-                            ),
-                          ],
-                        ),
-
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left:16.0),
-                    child: Container(
-                      height:297.5,
-                      width: 250,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),  color: Colors.white54,),
-                      //color: Colors.red,// Adjust the width as per your requirement
-                      // margin: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height:141,
-                            width:280,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)), color:Colors.grey.shade300,),
-                            child: Image.asset("images/img_7.png",),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8,top:8),
-                              child:Text("LIFESTYLE",style: TextStyle(color:Color.fromRGBO(89, 139, 237, 1),fontWeight: FontWeight.w600),)
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left:8.0,right:16,top:8.5),
-                            child: Container(
-                                child:Image.asset("images/img_8.png")
-                            ),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8.0,right:16,top:16),
-                              child:Image.asset("images/img_9.png",scale:1.8)
-                          ),
-                        ],
-                      ),
-
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left:16.0),
-                    child: Container(
-                      height:297.5,
-                      width: 250,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),  color: Colors.white54,),
-                      //color: Colors.red,// Adjust the width as per your requirement
-                      // margin: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height:141,
-                            width:280,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)), color:Colors.grey.shade300,),
-                            child: Image.asset("images/img_7.png",),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8,top:8),
-                              child:Text("LIFESTYLE",style: TextStyle(color:Color.fromRGBO(89, 139, 237, 1),fontWeight: FontWeight.w600),)
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left:8.0,right:16,top:8.5),
-                            child: Container(
-                                child:Image.asset("images/img_8.png")
-                            ),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8.0,right:16,top:16),
-                              child:Image.asset("images/img_9.png",scale:1.8)
-                          ),
-                        ],
-                      ),
-
-                    ),
-                  ),
-                ],
+                //  physics: BouncingScrollPhysics(),
+                itemCount: _program.items.length - a,
+                itemBuilder: (context, index) => SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 7, vertical: 5),
+                  child: Center(
+                      child: Programme(
+                           a:a+1,
+                           name: _program.items[a+index]['name'],
+                          category: _program.items[a+index]['category'],
+                          lesson: _program.items[a+index]['lesson'].toString(),
+                         )),
+                ),
               ),
             ),
             Row(
@@ -477,132 +423,25 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            Container(
+
+            _isLoading? Center(child:CircularProgressIndicator()) : Container(
               height:288,// Adjust the height as per your requirement
-              child: ListView(
+              child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left:16.0),
-                    child: Container(
-                      height:297.5,
-                      width: 250,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),  color: Colors.white54,),
-                      //color: Colors.red,// Adjust the width as per your requirement
-                      // margin: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height:141,
-                            width:280,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)), color:Colors.grey.shade300,),
-                            child: Image.asset("images/img_11.png",),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8,top:8),
-                              child:Text("BABYCARE",style: TextStyle(color:Color.fromRGBO(89, 139, 237, 1),fontWeight: FontWeight.w600),)
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left:8.0,right:16,top:8.5),
-                            child: Container(
-                                child:Image.asset("images/img_12.png")
-                            ),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8.0,right:16,top:10),
-                              child:Row(
-                                children: [
-                                  Image.asset("images/img_13.png",scale:1.5),
-                                  SizedBox(width:160),
-                                  Image.asset("images/img_17.png",scale:2.5),
-                                ],
-                              )
-                          ),
-                        ],
-                      ),
-
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left:16.0),
-                    child: Container(
-                      height:297.5,
-                      width: 250,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),  color: Colors.white54,),
-                      //color: Colors.red,// Adjust the width as per your requirement
-                      // margin: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height:141,
-                            width:280,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)), color:Colors.grey.shade300,),
-                            child: Image.asset("images/img_11.png",),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8,top:8),
-                              child:Text("BABYCARE",style: TextStyle(color:Color.fromRGBO(89, 139, 237, 1),fontWeight: FontWeight.w600),)
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left:8.0,right:16,top:8.5),
-                            child: Container(
-                                child:Image.asset("images/img_12.png")
-                            ),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8.0,right:16,top:10),
-                              child:Row(
-                                children: [
-                                  Image.asset("images/img_13.png",scale:1.5),
-                                  SizedBox(width:160),
-                                  Image.asset("images/img_17.png",scale:2.5),
-                                ],
-                              )
-                          ),
-                        ],
-                      ),
-
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left:16.0),
-                    child: Container(
-                      height:297.5,
-                      width: 250,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),  color: Colors.white54,),
-                      //color: Colors.red,// Adjust the width as per your requirement
-                      // margin: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height:141,
-                            width:280,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(8),topRight: Radius.circular(8)), color:Colors.grey.shade300,),
-                            child: Image.asset("images/img_11.png",),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8,top:8),
-                              child:Text("BABYCARE",style: TextStyle(color:Color.fromRGBO(89, 139, 237, 1),fontWeight: FontWeight.w600),)
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left:8.0,right:16,top:8.5),
-                            child: Container(
-                                child:Image.asset("images/img_12.png")
-                            ),
-                          ),
-                          Padding(padding: const EdgeInsets.only(left:8.0,right:16,top:10),
-                              child:Row(
-                                children: [
-                                  Image.asset("images/img_13.png",scale:1.5),
-                                  SizedBox(width:160),
-                                  Image.asset("images/img_17.png",scale:2.5),
-                                ],
-                              )
-                          ),
-                        ],
-                      ),
-
-                    ),
-                  ),
-                ],
+                //  physics: BouncingScrollPhysics(),
+                itemCount: _lesson.items.length - b,
+                itemBuilder: (context, index) => SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 7, vertical: 5),
+                  child: Center(
+                      child: Lessonforyou(
+                        b:b+1,
+                        name: _lesson.items[b+index]['name'],
+                        duration:_lesson.items[b+index]['duration'],
+                        category: _lesson.items[b+index]['category'],
+                        locked: _lesson.items[b+index]['locked'],
+                      )),
+                ),
               ),
             ),
           ]
